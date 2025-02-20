@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+
+//https://github.com/tericcabrel/blog-tutorials/blob/main/springboot-email/src/main/java/com/tericcabrel/mail/controllers/UserController.java
 @Service
 public class OtpService {
-    private Map<String, OtpData> otpMap = new HashMap<>();
     private static final long EXPIRATION_TIME_MS = 5 * 60 * 1000; // 5 minutes
+    private Map<String, OtpData> otpMap = new HashMap<>();
 
     public static int generateOtp() {
         return (int) (Math.random() * 900000) + 100000;
@@ -54,7 +56,7 @@ public class OtpService {
         return (System.currentTimeMillis() - otpData.getTimestamp()) > EXPIRATION_TIME_MS;
     }
 
-    public String sendOtpToMail(String email , String message){
+    public String sendOtpToMail(String email, String message) {
         // Implement sending OTP via email
         return "OTP sent successfully!";
     }

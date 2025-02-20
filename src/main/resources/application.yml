@@ -11,8 +11,21 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: convomate.contact@gmail.com
+    password: fdbk ruxh xrgh vtze
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+    from:
+      name: Convomate
 
-  # Redis Configuration for Embedded Redis
 springdoc:
   api-docs:
     path: /v3/api-docs

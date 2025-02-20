@@ -19,6 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     // Register a new user
     @Operation(summary = "Register a new user", description = "Provide user details to register")
     @PostMapping("/register")
