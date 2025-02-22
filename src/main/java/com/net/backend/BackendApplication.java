@@ -4,9 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
-
-@EnableCaching
 @SpringBootApplication
+@EnableCaching
 public class BackendApplication {
 //	public static void main(String[] args) {
 //		User user = new User();
@@ -40,5 +39,3 @@ public class BackendApplication {
 
 
 //http://localhost:8080/swagger-ui/index.html
-
-//https://github.com/tericcabrel/blog-tutorials/blob/main/springboot-email/src/main/java/com/tericcabrel/mail/controllers/UserController.java
