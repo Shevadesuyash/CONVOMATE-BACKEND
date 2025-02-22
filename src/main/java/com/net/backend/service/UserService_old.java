@@ -3,6 +3,9 @@ package com.net.backend.service;
 import com.net.backend.entity.User;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserService_old {
 
@@ -35,5 +38,9 @@ public class UserService_old {
     public String logoutUser(String username) {
         // Implement logout logic (e.g., invalidate session)
         return "User " + username + " has been logged out";
+    }
+
+    public List<User> allUsers() {
+        return new ArrayList<User>();
     }
 }

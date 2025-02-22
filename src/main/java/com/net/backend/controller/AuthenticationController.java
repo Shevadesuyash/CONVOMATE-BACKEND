@@ -1,5 +1,9 @@
 package com.net.backend.controller;
 
+import com.net.backend.entity.User;
+import com.net.backend.model.LoginResponse;
+import com.net.backend.model.LoginUserDto;
+import com.net.backend.model.RegisterUserDto;
 import com.net.backend.service.AuthenticationService;
 import com.net.backend.service.JwtService;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +37,7 @@ public class AuthenticationController {
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
-        LoginResponse loginResponse = new LoginResponse().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        LoginResponse loginResponse = LoginResponse.builder().token(jwtToken).expiresIn(jwtService.getExpirationTime()).build();
 
         return ResponseEntity.ok(loginResponse);
     }

@@ -28,10 +28,9 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
-        User user = new User()
-                .setFullName(input.getFullName())
-                .setEmail(input.getEmail())
-                .setPassword(passwordEncoder.encode(input.getPassword()));
+        User user = User.builder().username(input.getFullName())
+                .email(input.getEmail())
+                .password(passwordEncoder.encode(input.getPassword())).build();
 
         return userRepository.save(user);
     }

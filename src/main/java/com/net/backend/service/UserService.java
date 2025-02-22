@@ -1,5 +1,7 @@
 package com.net.backend.service;
 
+import com.net.backend.entity.User;
+import com.net.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,5 +1,9 @@
 package com.net.backend.model;
 
+
+import lombok.Data;
+
+@Data
 public class RegisterUserDto {
     private String email;
 
@@ -7,5 +11,4 @@ public class RegisterUserDto {
 
     private String fullName;
 
-    // getters and setters here...
 }
