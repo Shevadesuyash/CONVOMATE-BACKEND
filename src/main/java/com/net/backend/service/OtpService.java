@@ -1,6 +1,8 @@
 package com.net.backend.service;
 
 import com.net.backend.model.OtpData;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,36 +19,29 @@ public class OtpService {
         return (int) (Math.random() * 900000) + 100000;
     }
 
-    public String generateOtpForEmail(String email) {
+    public int generateOtpForEmail(String email) {
         int otp = generateOtp();
         long currentTime = System.currentTimeMillis();
         otpMap.put(email, new OtpData(otp, currentTime));
-        return "Your OTP for email verification is: " + otp;
+        return otp;
     }
 
-    public boolean verifyOtp(String email, int otp) {
+    public ResponseEntity<?> verifyOtp(String email, int otp) {
         if (otpMap.containsKey(email)) {
             OtpData otpData = otpMap.get(email);
             if (otpData.getOtp() == otp && !isOtpExpired(otpData)) {
                 otpMap.remove(email); // OTP verified, remove it
-                return true;
+                return new ResponseEntity<>(HttpStatus.ACCEPTED);
             }
         }
-        return false;
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public void removeOtp(String email) {
-        otpMap.remove(email);
-    }
-
-    public int getOtp(String email) {
-        return otpMap.getOrDefault(email, new OtpData(-1, 0)).getOtp();
-    }
 
     public boolean isOtpExpired(String email, int otpValidityDuration) {
         OtpData otpData = otpMap.get(email);
         if (otpData != null) {
-            long expirationTime = otpData.getTimestamp() + otpValidityDuration * 60000;
+            long expirationTime = otpData.getTimestamp() + otpValidityDuration * 60000L;
             return System.currentTimeMillis() > expirationTime;
         }
         return true;
@@ -60,6 +55,5 @@ public class OtpService {
         // Implement sending OTP via email
         return "OTP sent successfully!";
     }
-
 
 }

@@ -1,6 +1,6 @@
 package com.net.backend.controller;
 
-import com.net.backend.model.UserData;
+import com.net.backend.model.EmailData;
 import com.net.backend.service.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,9 +28,9 @@ public class ModelController {
     }
 
     @PostMapping("sendMail")
-    public String sendMail(UserData user) throws MessagingException, UnsupportedEncodingException {
+    public String sendMail(EmailData user) throws MessagingException, UnsupportedEncodingException {
 
-        emailService.register(user);
+        emailService.sendEmail(user);
         return "Success";
     }
 }

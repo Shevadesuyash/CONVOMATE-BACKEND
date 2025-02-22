@@ -1,6 +1,6 @@
 package com.net.backend.service;
 
-import com.net.backend.model.UserData;
+import com.net.backend.model.EmailData;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -17,8 +17,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class EmailService {
@@ -39,10 +37,8 @@ public class EmailService {
         this.htmlTemplateEngine = htmlTemplateEngine;
     }
 
-    public ResponseEntity<Object> register(@RequestBody UserData user)
+    public ResponseEntity<Object> sendEmail(@RequestBody EmailData user)
             throws MessagingException, UnsupportedEncodingException {
-
-        String otp = "generated_confirmation_url";
 
         final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         final MimeMessageHelper email = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -55,19 +51,18 @@ public class EmailService {
         ctx.setVariable("email", user.getEmail());
         ctx.setVariable("name", user.getName());
         ctx.setVariable("springLogo", SPRING_LOGO_IMAGE);
-        ctx.setVariable("otp", otp);
+        ctx.setVariable("otp", user.getOtp());
 
         final String htmlContent = this.htmlTemplateEngine.process(TEMPLATE_NAME, ctx);
         email.setText(htmlContent, true);
 
         ClassPathResource clr = new ClassPathResource(SPRING_LOGO_IMAGE);
         email.addInline("springLogo", clr, PNG_MIME);
-
-        mailSender.send(mimeMessage);
-
-        Map<String, String> body = new HashMap<>();
-        body.put("message", "User created successfully.");
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        try {
+            mailSender.send(mimeMessage);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Fail to send email", HttpStatus.BAD_GATEWAY);
+        }
+        return new ResponseEntity<>("Email Send Successfully, Check !!", HttpStatus.OK);
     }
 }
