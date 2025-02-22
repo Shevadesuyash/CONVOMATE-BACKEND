@@ -27,37 +27,14 @@ public class User implements Serializable {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "verify", nullable = false)
+    private boolean verify;
+
 }
 
-//import jakarta.persistence.*;
-//import lombok.Builder;
-//import lombok.Data;
-//
-//import java.io.Serializable;
-//
-//@Entity
-//@Data
-//@Builder
-//@Table(name = "app_user")
-//public class User implements Serializable {
-//
-//  @Id
-//  @GeneratedValue(strategy = GenerationType.IDENTITY)
-//  @Column(name = "user_id")
-//  private Long id;
-//
-//  @Column(name = "username",nullable = false, unique = true)
-//  private String username;
-//
-//  @Column(name = "password",nullable = false)
-//  private String password;
-//
-//  @Column(name = "email",nullable = false, unique = true)
-//  private String email;
-//
-//}
