@@ -31,7 +31,7 @@ public class UserController {
     // Register a new user
     @Operation(summary = "Register a new user", description = "Provide user details to register")
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(UserData user) {
+    public ResponseEntity<String> registerUser(@RequestBody UserData user) {
         log.info("Register with user {}", user);
         return userService.registerUser(user);
     }

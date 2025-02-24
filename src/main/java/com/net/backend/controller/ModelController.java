@@ -3,10 +3,8 @@ package com.net.backend.controller;
 import com.net.backend.model.EmailData;
 import com.net.backend.service.EmailService;
 import jakarta.mail.MessagingException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 
@@ -20,18 +18,21 @@ public class ModelController {
         this.emailService = emailService;
     }
 
-
     @GetMapping("/create")
+//    @PreAuthorize("hasRole('USER')") // Only users with the USER role can access this endpoint
     public String createModel() {
-        // Logic to create a new model
         return "Model created successfully";
     }
 
-    @PostMapping("sendMail")
-    public String sendMail(EmailData user) throws MessagingException, UnsupportedEncodingException {
-
+    @PostMapping("/sendMail")
+//    @PreAuthorize("hasRole('ADMIN')") // Only users with the ADMIN role can access this endpoint
+    public String sendMail(@RequestBody EmailData user) throws MessagingException, UnsupportedEncodingException {
         emailService.sendEmail(user);
         return "Success";
     }
-}
 
+    @GetMapping("/test")
+    public String test() {
+        return "Hello World!";
+    }
+}
