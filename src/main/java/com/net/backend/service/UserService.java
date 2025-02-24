@@ -32,7 +32,10 @@ public class UserService {
     public ResponseEntity<String> registerUser(UserData userData) {
         User userDetails = userRepository.findByEmail(userData.getEmail());
         if (ObjectUtils.isEmpty(userDetails)) {
-            User newUser = User.builder().username(userData.getUsername()).name(userData.getName()).email(userData.getEmail()).build();
+            User newUser = User.builder().username(userData.getUsername())
+                    .name(userData.getName())
+                    .email(userData.getEmail())
+                    .build();
             try {
                 userRepository.save(newUser);
             } catch (Exception e) {
@@ -66,9 +69,11 @@ public class UserService {
                     otp(String.valueOf(otp)).
                     time(String.valueOf(System.currentTimeMillis())).
                     build();
+            log.info("Generated OTP for email: " + email + " is " + otp);
             return emailService.sendEmail(data);
 
+        } else {
+            return new ResponseEntity<>("User not found. Please register first !!", HttpStatus.GATEWAY_TIMEOUT);
         }
-        return new ResponseEntity<>("User not found. Please register first !!", HttpStatus.GATEWAY_TIMEOUT);
     }
 }
