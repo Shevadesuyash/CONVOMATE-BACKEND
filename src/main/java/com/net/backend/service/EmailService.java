@@ -1,6 +1,7 @@
 package com.net.backend.service;
 
 import com.net.backend.model.EmailData;
+import com.net.backend.model.Response;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -39,7 +40,7 @@ public class EmailService {
         this.htmlTemplateEngine = htmlTemplateEngine;
     }
 
-    public ResponseEntity<Object> sendEmail(@RequestBody EmailData user)
+    public ResponseEntity<Response> sendEmail(@RequestBody EmailData user)
             throws MessagingException, UnsupportedEncodingException {
 
         final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
@@ -64,8 +65,8 @@ public class EmailService {
             mailSender.send(mimeMessage);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Fail to send email", HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(new Response ("Fail to send email"), HttpStatus.BAD_GATEWAY);
         }
-        return new ResponseEntity<>("Email Send Successfully, Check !!", HttpStatus.OK);
+        return new ResponseEntity<>(new Response("Email Send Successfully, Check !!"), HttpStatus.OK);
     }
 }

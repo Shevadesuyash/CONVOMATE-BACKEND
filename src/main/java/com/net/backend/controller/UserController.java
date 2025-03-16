@@ -2,8 +2,7 @@ package com.net.backend.controller;
 
 import com.net.backend.entity.Review;
 import com.net.backend.entity.User;
-import com.net.backend.model.ReviewForm;
-import com.net.backend.model.UserData;
+import com.net.backend.model.*;
 import com.net.backend.service.OtpService;
 import com.net.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +34,7 @@ public class UserController {
     // Register a new user
     @Operation(summary = "Register a new user", description = "Provide user details to register")
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserData user) {
+    public ResponseEntity<Response> registerUser(@RequestBody UserData user) {
         log.info("Register with user {}", user);
         return userService.registerUser(user);
     }
@@ -48,22 +48,20 @@ public class UserController {
     }
 
     @PostMapping("/generateOtp")
-    public ResponseEntity<?> generateOtp(@RequestParam String email) throws MessagingException, UnsupportedEncodingException {
-        return userService.generateOtp(email);
+    public ResponseEntity<?> generateOtp(@RequestBody Email email) throws MessagingException, UnsupportedEncodingException {
+        return userService.generateOtp(email.getEmail());
     }
 
 
-    // Login user and store the session in HttpSession
+    // Login user
     @Operation(summary = "Login a user", description = "Authenticate user with username and password")
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
-            @RequestParam @Parameter(description = "Email of the user", required = true) String username,
-            @RequestParam @Parameter(description = "Otp received on Mail ", required = true) String otp) {
-        return otpService.verifyOtp(username, Integer.parseInt(otp));
+    public ResponseEntity<?> loginUser(@RequestBody EmailOtp emailOtp) {
+        return otpService.verifyOtp(emailOtp.getEmail(), Integer.parseInt(emailOtp.getOtp()));
 
     }
 
-    // Logout user and invalidate session
+    // Logout user
     @Operation(summary = "Logout a user", description = "Logout the user by username")
     @PostMapping("/logout")
     public String logoutUser(
@@ -75,9 +73,9 @@ public class UserController {
     }
 
     @PostMapping("/review/submit")
-    public ResponseEntity<String> submitReview(@RequestBody ReviewForm reviewForm) {
+    public ResponseEntity<Response> submitReview(@RequestBody ReviewForm reviewForm) {
         userService.submitReview(reviewForm);
-        return ResponseEntity.ok("Review submitted successfully!");
+        return new ResponseEntity<>(new Response("Review submitted successfully!"), HttpStatus.OK);
     }
 
     @GetMapping("/review/all")
