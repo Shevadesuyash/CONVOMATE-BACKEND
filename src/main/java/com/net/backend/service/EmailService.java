@@ -4,6 +4,7 @@ import com.net.backend.model.EmailData;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
@@ -18,11 +19,12 @@ import org.thymeleaf.context.Context;
 
 import java.io.UnsupportedEncodingException;
 
+@Slf4j
 @Service
 public class EmailService {
 
     private static final String TEMPLATE_NAME = "registration";
-    private static final String SPRING_LOGO_IMAGE = "templates/images/spring.png";
+    private static final String SPRING_LOGO_IMAGE = "templates/images/5.jpeg";
     private static final String PNG_MIME = "image/png";
     private static final String MAIL_SUBJECT = "Registration Confirmation";
     private final JavaMailSender mailSender;
@@ -61,6 +63,7 @@ public class EmailService {
         try {
             mailSender.send(mimeMessage);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>("Fail to send email", HttpStatus.BAD_GATEWAY);
         }
         return new ResponseEntity<>("Email Send Successfully, Check !!", HttpStatus.OK);
