@@ -1,8 +1,11 @@
 package com.net.backend.service;
 
+import com.net.backend.entity.Review;
 import com.net.backend.entity.User;
 import com.net.backend.model.EmailData;
+import com.net.backend.model.ReviewForm;
 import com.net.backend.model.UserData;
+import com.net.backend.repository.ReviewRepository;
 import com.net.backend.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +30,9 @@ public class UserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    ReviewRepository reviewRepository;
 
 
     // Register a new user (dummy logic for now)
@@ -75,5 +82,21 @@ public class UserService {
         } else {
             return new ResponseEntity<>("User not found. Please register first !!", HttpStatus.GATEWAY_TIMEOUT);
         }
+    }
+
+    public void submitReview(ReviewForm reviewForm) {
+        Review review = new Review();
+        review.setName(reviewForm.getName());
+        review.setEmail(reviewForm.getEmail());
+        review.setSubject(reviewForm.getSubject());
+        review.setMessage(reviewForm.getMessage());
+
+        // Save to database
+        reviewRepository.save(review);
+
+    }
+
+    public List<Review> getAllReviews() {
+        return reviewRepository.findTop10ByOrderByIdDesc();
     }
 }

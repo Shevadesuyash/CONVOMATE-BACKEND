@@ -1,6 +1,8 @@
 package com.net.backend.controller;
 
+import com.net.backend.entity.Review;
 import com.net.backend.entity.User;
+import com.net.backend.model.ReviewForm;
 import com.net.backend.model.UserData;
 import com.net.backend.service.OtpService;
 import com.net.backend.service.UserService;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -71,5 +74,15 @@ public class UserController {
         return "User logged out successfully!";
     }
 
+    @PostMapping("/review/submit")
+    public ResponseEntity<String> submitReview(@RequestBody ReviewForm reviewForm) {
+        userService.submitReview(reviewForm);
+        return ResponseEntity.ok("Review submitted successfully!");
+    }
+
+    @GetMapping("/review/all")
+    public ResponseEntity<List<Review>> getAllReviews() {
+        return ResponseEntity.ok(userService.getAllReviews());
+    }
 
 }

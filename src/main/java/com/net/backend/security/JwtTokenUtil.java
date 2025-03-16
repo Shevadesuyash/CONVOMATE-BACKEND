@@ -3,6 +3,7 @@ package com.net.backend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,8 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
 
-    private static final String SECRET_KEY = "your_secret_key"; // Replace with a secure key
+//    @Value("${security.jwt.secret_key}")
+    private String SECRET_KEY="3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b" ; // Replace with a secure key
     private static final long EXPIRATION_TIME = 864_000_000; // 10 days in milliseconds
 
     public String generateToken(UserDetails userDetails) {
