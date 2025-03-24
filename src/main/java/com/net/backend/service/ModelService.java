@@ -1,16 +1,17 @@
 package com.net.backend.service;
 
-import com.net.backend.model.GrammarCheckRequest;
-import com.net.backend.model.GrammarCheckResponse;
-import com.net.backend.model.TranslationRequest;
-import com.net.backend.model.TranslationResponse;
+import com.net.backend.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.languagetool.JLanguageTool;
+import org.languagetool.rules.RuleMatch;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ModelService {
 
     private final String PYTHON_FLASK_URL = "http://127.0.0.1:5000/translate";
-    private final String pythonFlaskUrl = "http://localhost:5000/grammar/check";
+    private final String pythonFlaskUrl = "http://127.0.0.1:5001/correct_text";
 
     public ResponseEntity<?> translatePython(TranslationRequest request) {
         // Ensure the request payload is not null and contains the required fields
@@ -51,7 +52,7 @@ public class ModelService {
         }
     }
 
-    public ResponseEntity<?> grammarCheckPython(GrammarCheckRequest request) {
+    public ResponseEntity<?> correctTextPython(GrammarCheckRequest request) {
         log.info("Received Grammar Check Request: {}", request);
 
         // Validate the input
@@ -66,28 +67,19 @@ public class ModelService {
 
         // Payload for Python Flask grammar correction
         Map<String, String> payload = new HashMap<>();
-        payload.put("paragraph", request.getParagraph());
+        payload.put("paragraph", request.getParagraph()); // Use "text" as the key to match the Flask API
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(payload, headers);
 
         try {
 
-//            ResponseEntity<GrammarCheckResponse> response = restTemplate.postForEntity(
-//                    pythonFlaskUrl,
-//                    entity,
-//                    GrammarCheckResponse.class
-//            );
-//
-//            log.info("Grammar Correction Response: {}", response);
-//            return ResponseEntity.ok(response.getBody());
-
-            GrammarCheckResponse grammarResponse = GrammarCheckResponse.builder()
-                    .correctedText("Corrected Text")
-                    .build();
-
-            log.info("Grammar Correction Response: {}", grammarResponse);
-
-            return ResponseEntity.ok(grammarResponse);
+            // Send the request to the Flask API
+            ResponseEntity<GrammarCheckResponse> response = restTemplate.postForEntity(
+                    pythonFlaskUrl,
+                    entity,
+                    GrammarCheckResponse.class
+            );
+            return ResponseEntity.ok(response.getBody());
 
         } catch (HttpClientErrorException e) {
             log.error("Grammar Check Error: {}", e.getResponseBodyAsString());

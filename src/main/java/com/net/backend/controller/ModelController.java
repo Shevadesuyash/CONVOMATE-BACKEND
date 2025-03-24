@@ -1,8 +1,6 @@
 package com.net.backend.controller;
 
-import com.net.backend.model.EmailData;
-import com.net.backend.model.GrammarCheckRequest;
-import com.net.backend.model.TranslationRequest;
+import com.net.backend.model.*;
 import com.net.backend.service.EmailService;
 import com.net.backend.service.ModelService;
 import jakarta.mail.MessagingException;
@@ -53,9 +51,9 @@ public class ModelController {
         return modelService.translatePython(request);
     }
 
-    @PostMapping("/grammar-check")
+    @PostMapping("/correct_text")
     public ResponseEntity<?> grammarCheck(@RequestBody GrammarCheckRequest request) {
-        return modelService.grammarCheckPython(request);
+        return modelService.correctTextPython(request);
     }
 
 
