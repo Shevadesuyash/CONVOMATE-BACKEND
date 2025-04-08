@@ -56,5 +56,10 @@ public class ModelController {
         return modelService.correctTextPython(request);
     }
 
+    @PostMapping("/summarize")
+    public ResponseEntity<?> summarize (@RequestBody SummarizeRequest request){
+        return modelService.summarizeParagraph(request);
+    }
+
 
 }

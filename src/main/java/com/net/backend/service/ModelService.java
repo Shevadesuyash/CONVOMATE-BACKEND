@@ -2,8 +2,6 @@ package com.net.backend.service;
 
 import com.net.backend.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.languagetool.JLanguageTool;
-import org.languagetool.rules.RuleMatch;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,6 +18,7 @@ public class ModelService {
 
     private final String PYTHON_FLASK_URL = "http://127.0.0.1:5000/translate";
     private final String pythonFlaskUrl = "http://127.0.0.1:5001/correct_text";
+    private final String pythonFlaskUrlSummarizer = "http://127.0.0.1:5002/summarize";
 
     public ResponseEntity<?> translatePython(TranslationRequest request) {
         // Ensure the request payload is not null and contains the required fields
@@ -46,7 +45,7 @@ public class ModelService {
             log.info(response.toString());
             return ResponseEntity.ok(response.getBody());
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
@@ -82,7 +81,47 @@ public class ModelService {
             return ResponseEntity.ok(response.getBody());
 
         } catch (HttpClientErrorException e) {
-            log.error("Grammar Check Error: {}", e.getResponseBodyAsString());
+            log.error("Grammar Check Error: {}", e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Internal Server Error during Grammar Check", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    public ResponseEntity<?> summarizeParagraph(SummarizeRequest request) {
+
+        log.info("Received Paragraph Request: {}", request);
+
+        // Validate the input
+        if (request.getText() == null || request.getText().isEmpty()) {
+            return ResponseEntity.badRequest().body("No paragraph provided for summarize");
+        }
+
+        // Forward the request to the Python Flask backend
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Payload for Python Flask grammar correction
+        Map<String, String> payload = new HashMap<>();
+        payload.put("text", request.getText());
+        payload.put("type",request.getType());
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(payload, headers);
+
+        try {
+
+            // Send the request to the Flask API
+            ResponseEntity<SummarizeResponse> response = restTemplate.postForEntity(
+                    pythonFlaskUrlSummarizer,
+                    entity,
+                    SummarizeResponse.class
+            );
+            return ResponseEntity.ok(response.getBody());
+
+        } catch (HttpClientErrorException e) {
+            log.error("Summarizer Error: {}", e.getMessage());
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         } catch (Exception e) {
             log.error("Internal Server Error during Grammar Check", e);
