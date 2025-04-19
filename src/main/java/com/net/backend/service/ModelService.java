@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +17,8 @@ public class ModelService {
     private final String PYTHON_FLASK_URL = "http://127.0.0.1:5000/translate";
     private final String pythonFlaskUrl = "http://127.0.0.1:5001/correct_text";
     private final String pythonFlaskUrlSummarizer = "http://127.0.0.1:5002/summarize";
+    private final String pythonFlaskUrlChat = "http://127.0.0.1:5003/chat";
+    private final String pythonFlaskUrlChatStart = "http://127.0.0.1:5003/start";
 
     public ResponseEntity<?> translatePython(TranslationRequest request) {
         // Ensure the request payload is not null and contains the required fields
@@ -106,7 +106,7 @@ public class ModelService {
         // Payload for Python Flask grammar correction
         Map<String, String> payload = new HashMap<>();
         payload.put("text", request.getText());
-        payload.put("type",request.getType());
+        payload.put("type", request.getType());
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(payload, headers);
 
@@ -126,6 +126,63 @@ public class ModelService {
         } catch (Exception e) {
             log.error("Internal Server Error during Grammar Check", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    public ResponseEntity<?> processMessage(ChatRequest request) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Payload for Python Flask chat API
+        Map<String, String> payload = new HashMap<>();
+        payload.put("message", request.getMessage());
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(payload, headers);
+
+        try {
+            // Call Python Flask API
+            ResponseEntity<ChatResponse> response = restTemplate.postForEntity(
+                    pythonFlaskUrlChat,
+                    entity,
+                    ChatResponse.class
+            );
+            log.info(response.toString());
+            return ResponseEntity.ok(response.getBody());
+
+        } catch (HttpClientErrorException e) {
+            log.error("Chat API Error: {}", e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Internal Server Error during chat processing", e);
+            return ResponseEntity.internalServerError().body("Error processing chat message");
+        }
+    }
+
+    public ResponseEntity<?> startChat() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON); // Optional for GET
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            // Call the Flask API directly without any query parameters
+            ResponseEntity<ChatResponse> response = restTemplate.exchange(
+                    pythonFlaskUrlChatStart,
+                    HttpMethod.GET,
+                    entity,
+                    ChatResponse.class
+            );
+
+            return ResponseEntity.ok(response.getBody());
+
+        } catch (HttpClientErrorException e) {
+            log.error("Chat API Error: " + e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Internal Server Error during chat processing" + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error processing chat message");
         }
     }
 }

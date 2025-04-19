@@ -61,5 +61,18 @@ public class ModelController {
         return modelService.summarizeParagraph(request);
     }
 
+    @PostMapping("/chat")
+    public ResponseEntity<?> processChatMessage(@RequestBody ChatRequest request) {
+        if (request.getMessage() == null || request.getMessage().isEmpty()) {
+            return ResponseEntity.badRequest().body("Message cannot be empty");
+        }
+        return modelService.processMessage(request);
+    }
+
+    @GetMapping("/start")
+    public ResponseEntity<?> startChat(){
+        return modelService.startChat();
+    }
+
 
 }
