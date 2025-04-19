@@ -2,6 +2,7 @@ package com.net.backend.service;
 
 import com.net.backend.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -14,11 +15,20 @@ import java.util.Map;
 @Slf4j
 public class ModelService {
 
-    private final String PYTHON_FLASK_URL = "http://127.0.0.1:5000/translate";
-    private final String pythonFlaskUrl = "http://127.0.0.1:5001/correct_text";
-    private final String pythonFlaskUrlSummarizer = "http://127.0.0.1:5002/summarize";
-    private final String pythonFlaskUrlChat = "http://127.0.0.1:5003/chat";
-    private final String pythonFlaskUrlChatStart = "http://127.0.0.1:5003/start";
+    @Value("${python.flask.translate-url}")
+    private String PYTHON_FLASK_URL;
+
+    @Value("${python.flask.correct-text-url}")
+    private String pythonFlaskUrl;
+
+    @Value("${python.flask.summarizer-url}")
+    private String pythonFlaskUrlSummarizer;
+
+    @Value("${python.flask.chat-url}")
+    private String pythonFlaskUrlChat;
+
+    @Value("${python.flask.chat-start-url}")
+    private String pythonFlaskUrlChatStart;
 
     public ResponseEntity<?> translatePython(TranslationRequest request) {
         // Ensure the request payload is not null and contains the required fields
@@ -184,5 +194,14 @@ public class ModelService {
             log.error("Internal Server Error during chat processing" + e.getMessage());
             return ResponseEntity.internalServerError().body("Error processing chat message");
         }
+    }
+
+    public void printurl() {
+        log.info("PYTHON_FLASK_URL : "+PYTHON_FLASK_URL);
+        log.info("pythonFlaskUrl : "+ pythonFlaskUrl);
+        log.info("pythonFlaskUrlSummarizer : "+pythonFlaskUrlSummarizer);
+        log.info("pythonFlaskUrlChat : "+ pythonFlaskUrlChat);
+        log.info("pythonFlaskUrlChatStart : "+pythonFlaskUrlChatStart);
+        log.info("working  :");
     }
 }

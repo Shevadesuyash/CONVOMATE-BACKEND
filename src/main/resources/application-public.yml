@@ -36,3 +36,10 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+python:
+  flask:
+    translate-url: http://127.0.0.1:5000/translate
+    correct-text-url: http://127.0.0.1:5001/correct_text
+    summarizer-url: http://127.0.0.1:5002/summarize
+    chat-url: http://127.0.0.1:5003/chat
+    chat-start-url: http://127.0.0.1:5003/start

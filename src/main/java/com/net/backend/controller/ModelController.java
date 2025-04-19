@@ -42,6 +42,7 @@ public class ModelController {
 
     @GetMapping("/test")
     public String test() {
+        modelService.printurl();
         return "Hello World!";
     }
 
