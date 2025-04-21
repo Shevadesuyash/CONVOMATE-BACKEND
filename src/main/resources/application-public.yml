@@ -1,4 +1,19 @@
 spring:
+  spring:
+    cloud:
+      gateway:
+        default-filters:
+          - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+        globalcors:
+          corsConfigurations:
+            '[/**]':
+              allowedOrigins: "https://convomate.netlify.app,https://convomate.duckdns.org"
+              allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
+              allowedHeaders: "*"
+              allowCredentials: true
+              maxAge: 3600
+
+  # Other application configurations...
   datasource:
     url: jdbc:postgresql://localhost:5432/convomant
     username: root
