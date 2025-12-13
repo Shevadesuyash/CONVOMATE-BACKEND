@@ -7,7 +7,7 @@ spring:
         globalcors:
           corsConfigurations:
             '[/**]':
-              allowedOrigins: "https://convomate.netlify.app,https://convomate.duckdns.org"
+              allowedOrigins: "https://convomate.netlify.app,https://convomate.duckdns.org ,http://localhost:3030/,https://localhost:3030/"
               allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
               allowedHeaders: "*"
               allowCredentials: true

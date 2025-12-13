@@ -4,12 +4,10 @@ import com.net.backend.model.*;
 import com.net.backend.service.EmailService;
 import com.net.backend.service.ModelService;
 import jakarta.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.UnsupportedEncodingException;
 
 @Slf4j
 @RestController
