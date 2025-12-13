@@ -1,8 +1,12 @@
 package com.net.backend.service;
 
+import com.net.backend.entity.Review;
 import com.net.backend.entity.User;
 import com.net.backend.model.EmailData;
+import com.net.backend.model.Response;
+import com.net.backend.model.ReviewForm;
 import com.net.backend.model.UserData;
+import com.net.backend.repository.ReviewRepository;
 import com.net.backend.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -27,9 +32,15 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private ModelService  modelService;
+
+    @Autowired
+    ReviewRepository reviewRepository;
+
 
     // Register a new user (dummy logic for now)
-    public ResponseEntity<String> registerUser(UserData userData) {
+    public ResponseEntity<Response> registerUser(UserData userData) {
         User userDetails = userRepository.findByEmail(userData.getEmail());
         if (ObjectUtils.isEmpty(userDetails)) {
             User newUser = User.builder().username(userData.getUsername())
@@ -40,11 +51,11 @@ public class UserService {
                 userRepository.save(newUser);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                return new ResponseEntity<>("Fail to save user. Contact support", HttpStatus.GATEWAY_TIMEOUT);
+                return new ResponseEntity<>(new Response("Fail to save user. Contact support"), HttpStatus.GATEWAY_TIMEOUT);
             }
-            return new ResponseEntity<>("User successfully saved", HttpStatus.OK);
+            return new ResponseEntity<>(new Response("User successfully saved"), HttpStatus.OK);
         }
-        return new ResponseEntity<>("Already registered , Please Login !", HttpStatus.OK);
+        return new ResponseEntity<>(new Response("Already registered , Please Login !"), HttpStatus.OK);
     }
 
     // Fetch user profile by username (dummy logic for now)
@@ -58,7 +69,7 @@ public class UserService {
         return "User " + username + " has been logged out";
     }
 
-    public ResponseEntity<?> generateOtp(String email) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<Response> generateOtp(String email) throws MessagingException, UnsupportedEncodingException {
         User user = userRepository.findByEmail(email);
         if (!ObjectUtils.isEmpty(user)) {
             int otp = otpService.generateOtpForEmail(email);
@@ -73,7 +84,22 @@ public class UserService {
             return emailService.sendEmail(data);
 
         } else {
-            return new ResponseEntity<>("User not found. Please register first !!", HttpStatus.GATEWAY_TIMEOUT);
+            return new ResponseEntity<>(new Response("User not found. Please register first !!"), HttpStatus.GATEWAY_TIMEOUT);
         }
+    }
+
+    public void submitReview(ReviewForm reviewForm) {
+        Review review = new Review();
+        review.setName(reviewForm.getName());
+        review.setEmail(reviewForm.getEmail());
+        review.setSubject(reviewForm.getSubject());
+        review.setMessage(reviewForm.getMessage());
+
+        // Save to database
+        reviewRepository.save(review);
+    }
+
+    public List<Review> getAllReviews() {
+        return reviewRepository.findTop10ByOrderByIdDesc();
     }
 }

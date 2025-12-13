@@ -2,6 +2,7 @@ package com.net.backend.service;
 
 import com.net.backend.entity.User;
 import com.net.backend.model.OtpData;
+import com.net.backend.model.Response;
 import com.net.backend.repository.UserRepository;
 import com.net.backend.security.JwtTokenUtil;
 import org.apache.commons.lang3.ObjectUtils;
@@ -53,7 +54,7 @@ public class OtpService {
                 // Fetch user details from the database
                 User user = userRepository.findByEmail(email);
                 if (ObjectUtils.isEmpty(user)) {
-                    return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(new Response("User not found"), HttpStatus.NOT_FOUND);
                 }
 
                 // Authenticate the user
@@ -66,10 +67,10 @@ public class OtpService {
                 String jwtToken = jwtTokenUtil.generateToken(userDetails);
 
                 // Return the JWT token to the client
-                return ResponseEntity.ok().body(Map.of("token", jwtToken));
+                return ResponseEntity.ok(Map.of("token", jwtToken, "message", "Login successful"));
             }
         }
-        return new ResponseEntity<>("Invalid or expired OTP", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Response("Invalid or expired OTP"), HttpStatus.BAD_REQUEST);
     }
 
     private boolean isOtpExpired(OtpData otpData) {

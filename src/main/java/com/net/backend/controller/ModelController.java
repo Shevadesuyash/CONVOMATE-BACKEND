@@ -1,21 +1,28 @@
 package com.net.backend.controller;
 
-import com.net.backend.model.EmailData;
+import com.net.backend.model.*;
 import com.net.backend.service.EmailService;
+import com.net.backend.service.ModelService;
 import jakarta.mail.MessagingException;
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.io.UnsupportedEncodingException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
-
+@Slf4j
 @RestController
 @RequestMapping("/model")
 public class ModelController {
 
-    private final EmailService emailService;
+    private  EmailService emailService;
 
-    public ModelController(EmailService emailService) {
+
+    private ModelService modelService;
+
+
+    public ModelController(EmailService emailService,ModelService modelService) {
         this.emailService = emailService;
+        this.modelService = modelService;
     }
 
     @GetMapping("/create")
@@ -33,6 +40,38 @@ public class ModelController {
 
     @GetMapping("/test")
     public String test() {
+        modelService.printurl();
         return "Hello World!";
     }
+
+
+    @PostMapping("/translate")
+    public ResponseEntity<?> translate(@RequestBody TranslationRequest request) {
+        return modelService.translatePython(request);
+    }
+
+    @PostMapping("/correct_text")
+    public ResponseEntity<?> grammarCheck(@RequestBody GrammarCheckRequest request) {
+        return modelService.correctTextPython(request);
+    }
+
+    @PostMapping("/summarize")
+    public ResponseEntity<?> summarize (@RequestBody SummarizeRequest request){
+        return modelService.summarizeParagraph(request);
+    }
+
+    @PostMapping("/chat")
+    public ResponseEntity<?> processChatMessage(@RequestBody ChatRequest request) {
+        if (request.getMessage() == null || request.getMessage().isEmpty()) {
+            return ResponseEntity.badRequest().body("Message cannot be empty");
+        }
+        return modelService.processMessage(request);
+    }
+
+    @GetMapping("/start")
+    public ResponseEntity<?> startChat(){
+        return modelService.startChat();
+    }
+
+
 }
