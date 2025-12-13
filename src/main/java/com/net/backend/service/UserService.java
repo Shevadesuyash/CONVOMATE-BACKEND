@@ -33,6 +33,9 @@ public class UserService {
     private EmailService emailService;
 
     @Autowired
+    private ModelService  modelService;
+
+    @Autowired
     ReviewRepository reviewRepository;
 
 
